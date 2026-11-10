@@ -1,0 +1,12 @@
+# Private database backups and migration snapshots
+/backups
+
+# Local environment files; the example contains no credentials
+.env
+.env.*
+!.env.example
+
+# Local Supabase project state and generated TypeScript files
+/supabase/.temp
+*.tsbuildinfo
+next-env.d.ts
