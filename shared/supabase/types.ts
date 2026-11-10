@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18"
+  }
   public: {
     Tables: {
       addresses: {
@@ -405,10 +410,52 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          parent_id: string | null
+          sort_order: number
+          system_key: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          parent_id?: string | null
+          sort_order?: number
+          system_key?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          parent_id?: string | null
+          sort_order?: number
+          system_key?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount_minor: number
-          category: string
+          category: string | null
+          category_id: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -419,12 +466,17 @@ export type Database = {
             | Database["public"]["Enums"]["manual_payment_method"]
             | null
           payment_status: Database["public"]["Enums"]["expense_payment_status"]
+          quantity: number | null
+          recurring_template_id: string | null
+          source: string
+          unit: string | null
           updated_at: string
           vendor: string | null
         }
         Insert: {
           amount_minor: number
-          category: string
+          category?: string | null
+          category_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -435,12 +487,17 @@ export type Database = {
             | Database["public"]["Enums"]["manual_payment_method"]
             | null
           payment_status?: Database["public"]["Enums"]["expense_payment_status"]
+          quantity?: number | null
+          recurring_template_id?: string | null
+          source?: string
+          unit?: string | null
           updated_at?: string
           vendor?: string | null
         }
         Update: {
           amount_minor?: number
-          category?: string
+          category?: string | null
+          category_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -451,10 +508,29 @@ export type Database = {
             | Database["public"]["Enums"]["manual_payment_method"]
             | null
           payment_status?: Database["public"]["Enums"]["expense_payment_status"]
+          quantity?: number | null
+          recurring_template_id?: string | null
+          source?: string
+          unit?: string | null
           updated_at?: string
           vendor?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_recurring_template_id_fkey"
+            columns: ["recurring_template_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_expense_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       geocoding_api_calls: {
         Row: {
@@ -567,21 +643,27 @@ export type Database = {
       market_sale_items: {
         Row: {
           id: string
+          line_total_minor: number
           product_key: string
           quantity: number
           sale_id: string
+          unit_price_minor: number
         }
         Insert: {
           id?: string
+          line_total_minor?: number
           product_key: string
           quantity: number
           sale_id: string
+          unit_price_minor?: number
         }
         Update: {
           id?: string
+          line_total_minor?: number
           product_key?: string
           quantity?: number
           sale_id?: string
+          unit_price_minor?: number
         }
         Relationships: [
           {
@@ -644,6 +726,78 @@ export type Database = {
           },
         ]
       }
+      meta_ads_changes: {
+        Row: {
+          action: string
+          actor_id: string | null
+          after_daily_budget_minor: number | null
+          before_daily_budget_minor: number | null
+          created_at: string
+          entity_id: string
+          entity_level: string
+          entity_name: string
+          id: string
+          reason: string
+          source: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          after_daily_budget_minor?: number | null
+          before_daily_budget_minor?: number | null
+          created_at?: string
+          entity_id: string
+          entity_level: string
+          entity_name: string
+          id?: string
+          reason: string
+          source: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          after_daily_budget_minor?: number | null
+          before_daily_budget_minor?: number | null
+          created_at?: string
+          entity_id?: string
+          entity_level?: string
+          entity_name?: string
+          id?: string
+          reason?: string
+          source?: string
+        }
+        Relationships: []
+      }
+      meta_ads_settings: {
+        Row: {
+          automation_enabled: boolean
+          daily_cap_minor: number
+          id: boolean
+          max_changes_per_entity_per_day: number
+          max_increase_pct: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          automation_enabled?: boolean
+          daily_cap_minor?: number
+          id?: boolean
+          max_changes_per_entity_per_day?: number
+          max_increase_pct?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          automation_enabled?: boolean
+          daily_cap_minor?: number
+          id?: boolean
+          max_changes_per_entity_per_day?: number
+          max_increase_pct?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string
@@ -702,6 +856,61 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "reminders"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_gift_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          order_id: string
+          product_key: string
+          quantity: number
+          unit_label: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          order_id: string
+          product_key: string
+          quantity: number
+          unit_label: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string
+          product_key?: string
+          quantity?: number
+          unit_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_gift_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_gift_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_gift_items_product_key_fkey"
+            columns: ["product_key"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["key"]
           },
         ]
       }
@@ -845,6 +1054,8 @@ export type Database = {
         Row: {
           address_id: string
           amount_paid_minor: number
+          aras_integration_code: string | null
+          aras_sent_at: string | null
           cargo_carrier: string | null
           cargo_tracking_number: string | null
           cargo_tracking_url: string | null
@@ -877,6 +1088,8 @@ export type Database = {
         Insert: {
           address_id: string
           amount_paid_minor?: number
+          aras_integration_code?: string | null
+          aras_sent_at?: string | null
           cargo_carrier?: string | null
           cargo_tracking_number?: string | null
           cargo_tracking_url?: string | null
@@ -909,6 +1122,8 @@ export type Database = {
         Update: {
           address_id?: string
           amount_paid_minor?: number
+          aras_integration_code?: string | null
+          aras_sent_at?: string | null
           cargo_carrier?: string | null
           cargo_tracking_number?: string | null
           cargo_tracking_url?: string | null
@@ -1065,6 +1280,86 @@ export type Database = {
           web_slug?: string | null
         }
         Relationships: []
+      }
+      recurring_expense_templates: {
+        Row: {
+          active: boolean
+          amount_type: Database["public"]["Enums"]["recurring_expense_amount_type"]
+          cadence: Database["public"]["Enums"]["recurring_expense_cadence"]
+          category_id: string
+          created_at: string
+          created_by: string | null
+          day_of_month: number | null
+          day_of_week: number | null
+          default_amount_minor: number
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          next_run_at: string
+          note: string | null
+          payment_method:
+            | Database["public"]["Enums"]["manual_payment_method"]
+            | null
+          start_date: string
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          active?: boolean
+          amount_type: Database["public"]["Enums"]["recurring_expense_amount_type"]
+          cadence: Database["public"]["Enums"]["recurring_expense_cadence"]
+          category_id: string
+          created_at?: string
+          created_by?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          default_amount_minor: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          next_run_at: string
+          note?: string | null
+          payment_method?:
+            | Database["public"]["Enums"]["manual_payment_method"]
+            | null
+          start_date: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          active?: boolean
+          amount_type?: Database["public"]["Enums"]["recurring_expense_amount_type"]
+          cadence?: Database["public"]["Enums"]["recurring_expense_cadence"]
+          category_id?: string
+          created_at?: string
+          created_by?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          default_amount_minor?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          next_run_at?: string
+          note?: string | null
+          payment_method?:
+            | Database["public"]["Enums"]["manual_payment_method"]
+            | null
+          start_date?: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expense_templates_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       recurring_templates: {
         Row: {
@@ -1287,6 +1582,39 @@ export type Database = {
         }
         Relationships: []
       }
+      showcase_slides: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          focus_y: number
+          id: string
+          image_alt: string
+          image_path: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          focus_y?: number
+          id?: string
+          image_alt: string
+          image_path: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          focus_y?: number
+          id?: string
+          image_alt?: string
+          image_path?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       spatial_ref_sys: {
         Row: {
           auth_name: string | null
@@ -1313,24 +1641,39 @@ export type Database = {
       }
       storefront_settings: {
         Row: {
+          cargo_fee_minor: number
+          cargo_free_shipping_threshold_minor: number
           cargo_min_order_minor: number
+          hero_subtitle: string
+          hero_title: string
           home_delivery_days: number[]
+          home_delivery_fee_minor: number
           home_min_order_minor: number
           id: boolean
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          cargo_fee_minor?: number
+          cargo_free_shipping_threshold_minor?: number
           cargo_min_order_minor?: number
+          hero_subtitle?: string
+          hero_title?: string
           home_delivery_days?: number[]
+          home_delivery_fee_minor?: number
           home_min_order_minor?: number
           id?: boolean
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          cargo_fee_minor?: number
+          cargo_free_shipping_threshold_minor?: number
           cargo_min_order_minor?: number
+          hero_subtitle?: string
+          hero_title?: string
           home_delivery_days?: number[]
+          home_delivery_fee_minor?: number
           home_min_order_minor?: number
           id?: boolean
           updated_at?: string
@@ -1581,7 +1924,6 @@ export type Database = {
         Args: { p_address_id: string; p_auth_user_id: string }
         Returns: undefined
       }
-      disablelongtransactions: { Args: never; Returns: string }
       delivery_counts_by_day: {
         Args: { p_from: string; p_to: string }
         Returns: {
@@ -1590,6 +1932,7 @@ export type Database = {
           total: number
         }[]
       }
+      disablelongtransactions: { Args: never; Returns: string }
       dropgeometrycolumn:
         | {
             Args: {
@@ -1640,6 +1983,16 @@ export type Database = {
           category: string
         }[]
       }
+      finance_expense_category_breakdown: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          amount_minor: number
+          category_id: string
+          category_name: string
+          parent_id: string
+          parent_name: string
+        }[]
+      }
       finance_expense_summary: {
         Args: { p_from: string; p_to: string }
         Returns: {
@@ -1663,6 +2016,7 @@ export type Database = {
           product_key: string
           product_name: string
           total_quantity: number
+          total_revenue_minor: number
         }[]
       }
       finance_revenue_by_channel: {
@@ -1706,6 +2060,14 @@ export type Database = {
           time_slot: Database["public"]["Enums"]["time_slot"]
           total_minor: number
         }[]
+      }
+      generate_recurring_expense: {
+        Args: {
+          p_created_by: string
+          p_expense_date: string
+          p_template_id: string
+        }
+        Returns: string
       }
       geometry: { Args: { "": string }; Returns: unknown }
       geometry_above: {
@@ -1848,8 +2210,8 @@ export type Database = {
           current_unit_price_minor: number
           display_name: string
           fulfillment_type: string
-          image_alt: string | null
-          image_path: string | null
+          image_alt: string
+          image_path: string
           is_featured: boolean
           is_web_visible: boolean
           key: string
@@ -1860,18 +2222,20 @@ export type Database = {
           total_quantity_sold: number
           unit: string
           unit_label: string
-          web_description: string | null
+          web_description: string
         }[]
       }
       longtransactionsenabled: { Args: never; Returns: boolean }
       lookup_guest_order: {
         Args: { p_order_number: string; p_phone: string }
         Returns: {
+          amount_paid_minor: number
           cargo_carrier: string
           cargo_tracking_number: string
           cargo_tracking_url: string
           created_at: string
           fulfillment_channel: Database["public"]["Enums"]["fulfillment_channel"]
+          items: Json
           order_id: string
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"]
@@ -1884,12 +2248,14 @@ export type Database = {
       lookup_guest_order_by_number: {
         Args: { p_ip?: string; p_order_number: string }
         Returns: {
+          amount_paid_minor: number
           cargo_carrier: string
           cargo_tracking_number: string
           cargo_tracking_url: string
           created_at: string
           estimated_delivery_at: string
           fulfillment_channel: Database["public"]["Enums"]["fulfillment_channel"]
+          items: Json
           order_id: string
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"]
@@ -1902,12 +2268,14 @@ export type Database = {
       lookup_guest_orders_by_details: {
         Args: { p_ip?: string; p_order_type: string; p_phone: string }
         Returns: {
+          amount_paid_minor: number
           cargo_carrier: string
           cargo_tracking_number: string
           cargo_tracking_url: string
           created_at: string
           estimated_delivery_at: string
           fulfillment_channel: Database["public"]["Enums"]["fulfillment_channel"]
+          items: Json
           order_id: string
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"]
@@ -2003,6 +2371,27 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
+      product_tally: {
+        Args: { p_date_basis?: string; p_from: string; p_to: string }
+        Returns: {
+          display_name: string
+          kind: string
+          product_key: string
+          quantity: number
+          unit_label: string
+        }[]
+      }
+      product_tally_by_month: {
+        Args: { p_date_basis?: string; p_from: string; p_to: string }
+        Returns: {
+          display_name: string
+          kind: string
+          month: string
+          product_key: string
+          quantity: number
+          unit_label: string
+        }[]
+      }
       recompute_order_payment: {
         Args: { p_order_id: string }
         Returns: undefined
@@ -2019,6 +2408,7 @@ export type Database = {
         Args: { p_all_day: boolean; p_due_at: string }
         Returns: string
       }
+      reorder_showcase_slides: { Args: { p_ids: string[] }; Returns: undefined }
       resolve_channel_for_items: {
         Args: {
           p_address: Database["public"]["Tables"]["addresses"]["Row"]
@@ -2699,6 +3089,13 @@ export type Database = {
       payment_method: "cash_on_delivery" | "bank_transfer" | "credit_card"
       payment_status: "pending" | "paid" | "failed" | "refunded" | "partial"
       recurring_cadence: "weekly" | "biweekly" | "monthly"
+      recurring_expense_amount_type: "fixed" | "variable"
+      recurring_expense_cadence:
+        | "weekly"
+        | "monthly"
+        | "quarterly"
+        | "semiannual"
+        | "yearly"
       time_slot: "morning" | "afternoon" | "evening"
       user_role: "admin" | "operator" | "viewer"
     }
@@ -2724,12 +3121,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2753,11 +3150,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2778,11 +3175,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2803,11 +3200,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2820,11 +3217,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2868,9 +3265,16 @@ export const Constants = {
       payment_method: ["cash_on_delivery", "bank_transfer", "credit_card"],
       payment_status: ["pending", "paid", "failed", "refunded", "partial"],
       recurring_cadence: ["weekly", "biweekly", "monthly"],
+      recurring_expense_amount_type: ["fixed", "variable"],
+      recurring_expense_cadence: [
+        "weekly",
+        "monthly",
+        "quarterly",
+        "semiannual",
+        "yearly",
+      ],
       time_slot: ["morning", "afternoon", "evening"],
       user_role: ["admin", "operator", "viewer"],
     },
   },
 } as const
-
