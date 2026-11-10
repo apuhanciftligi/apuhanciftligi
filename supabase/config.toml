@@ -243,11 +243,11 @@ otp_expiry = 3600
 # local Inbucket mail matches production and stays version-controlled; the same
 # files are pasted into the Dashboard when they change.
 [auth.email.template.confirmation]
-subject = "Apuhan Çiftliği — e-posta adresini doğrula"
+subject = "Apuhan Çiftliği — e-posta adresinizi doğrulayın"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Apuhan Çiftliği — şifre sıfırlama"
+subject = "Apuhan Çiftliği — şifrenizi sıfırlayın"
 content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize email template
