@@ -65,6 +65,7 @@ describe("buildOrderConfirmationEmail", () => {
     });
 
     expect(text).not.toContain("2026-07-30");
+    expect(html).not.toContain("2026-07-30");
     expect(text).toContain("Gönderim: Siparişiniz hazırlanıp kargoya verilecektir.");
     expect(text).toContain("Kargo: Ücretsiz");
     expect(html).toContain("Kargo");
@@ -73,10 +74,32 @@ describe("buildOrderConfirmationEmail", () => {
   it("escapes HTML in user-provided fields", () => {
     const { html } = buildOrderConfirmationEmail({
       ...base,
+      orderNumber: '<img src=x onerror="alert(1)">',
+      customerName: "<script>name</script>",
       addressText: "<script>x</script>",
+      paymentMethodLabel: "<script>payment</script>",
+      items: [{ name: "<script>product</script>", quantity: 1, lineTotalMinor: 100 }],
+      bankTransfer: {
+        iban: "<script>iban</script>",
+        accountHolder: "<script>holder</script>",
+        bankName: "<script>bank</script>",
+        whatsappUrl: 'https://wa.me/905332556444?text=" onclick="alert(1)',
+      },
     });
     expect(html).not.toContain("<script>");
     expect(html).toContain("&lt;script&gt;");
+    expect(html).not.toContain("<img src=x");
+    expect(html).toContain("&lt;img src=x onerror=&quot;alert(1)&quot;&gt;");
+    expect(html).not.toContain('" onclick="alert(1)');
+  });
+
+  it("links both email versions to the public order lookup for guests and account holders", () => {
+    const { html, text } = buildOrderConfirmationEmail(base);
+    const trackingUrl = "https://apuhanciftligi.com/siparis-sorgula";
+
+    expect(html).toContain(`href="${trackingUrl}"`);
+    expect(text).toContain(trackingUrl);
+    expect(text).toContain("telefon numarasıyla sorgulama yapabilirsiniz");
   });
 
   it("omits the bank transfer block when not paying by havale", () => {
