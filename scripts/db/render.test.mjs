@@ -91,6 +91,35 @@ describe("renderFailureIssue", () => {
   it("is honest when the state is unknown", () => {
     expect(renderFailureIssue({ stage: "uygula", sha: "a", runUrl: "u", message: "m" })).toContain("Belirsiz");
   });
+
+  it("does not claim the database changed when nothing was pending", () => {
+    const issue = renderFailureIssue({ stage: "yayinla", sha: "a", runUrl: "u", message: "m", pending: [] });
+    expect(issue).toContain("**Hayır**, veritabanı değişmedi");
+    expect(issue).toContain("uygulanacak değişiklik yoktu");
+    expect(issue).not.toContain("GÜNCELLENDİ");
+  });
+
+  it("still says the database changed when migrations were pending", () => {
+    const issue = renderFailureIssue({ stage: "yayinla", sha: "a", runUrl: "u", message: "m", pending: ["x.sql"] });
+    expect(issue).toContain("veritabanı güncellendi");
+  });
+
+  it("keeps an unknown state unknown when the pending list was never read", () => {
+    expect(renderFailureIssue({ stage: "uygula", sha: "a", runUrl: "u", message: "m", pending: null })).toContain("Belirsiz");
+  });
+
+  it("explains a Vercel author block instead of advising a useless retry", () => {
+    const issue = renderFailureIssue({
+      stage: "yayinla",
+      sha: "a",
+      runUrl: "u",
+      message: "Vercel: Deployment was blocked\nGit author someone must have access to the project on Vercel to create deployments.",
+      pending: [],
+    });
+    expect(issue).toContain("Vercel ekibinde olmadığı");
+    expect(issue).toContain("İŞE YARAMAZ");
+    expect(issue).not.toContain("Çoğu zaman 'Run workflow'");
+  });
 });
 
 describe("renderSuccessComment", () => {

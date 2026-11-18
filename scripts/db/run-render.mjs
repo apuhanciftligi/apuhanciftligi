@@ -1,6 +1,6 @@
 // Tiny CLI around render.mjs so workflows never build Markdown in shell.
 //   node scripts/db/run-render.mjs pr-comment --lint lint.json --replay success --status status.json --pr 12 --run-url URL --approved true
-//   node scripts/db/run-render.mjs failure --stage uygula --sha $SHA --run-url URL --message-file err.txt --prs 12,13
+//   node scripts/db/run-render.mjs failure --stage uygula --sha $SHA --run-url URL --message-file err.txt --prs 12,13 --pending a.sql --pending-known true
 //   node scripts/db/run-render.mjs success --applied a.sql,b.sql --sha $SHA
 import fs from "node:fs";
 
@@ -36,6 +36,8 @@ if (kind === "pr-comment") {
       message: messageFile && fs.existsSync(messageFile) ? fs.readFileSync(messageFile, "utf8") : arg("message"),
       prNumbers: (arg("prs", "") ?? "").split(",").filter(Boolean).map(Number),
       secrets: [process.env.SUPABASE_DB_URL, process.env.VERCEL_DEPLOY_HOOK_URL],
+      // Only trust the pending list when the state step actually finished ("--pending-known true").
+      pending: arg("pending-known") === "true" ? (arg("pending", "") ?? "").split(",").filter(Boolean) : null,
     }),
   );
 } else if (kind === "success") {
