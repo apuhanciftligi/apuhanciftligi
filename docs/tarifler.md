@@ -24,7 +24,7 @@ elle bir şey yapılmayan süredir. Google'a giden toplam süreye eklenir, sayfa
 
 ## Fotoğraflar
 
-Üç tarifin her biri `public/tarifler/` altında ayrı bir WebP görseli kullanır.
+Sekiz tarifin her biri `public/tarifler/` altında ayrı bir WebP görseli kullanır.
 Bu görseller yapay zekâyla üretildi; üretim yöntemi ve kullanılan prompt'lar
 `docs/tarif-gorselleri.md` dosyasında kayıtlıdır. Gerçek çiftlik çekimi değildir.
 İleride kendi yemek fotoğraflarınızla değiştirebilirsiniz; görseli değiştirirken
@@ -38,6 +38,23 @@ Recipe JSON-LD çıktısında kullanılır.
 Testler benzersiz slug'ları, geçerli takvim tarihlerini, boş olmayan malzeme ve
 adımları, yerel görselleri, JSON-LD'yi, metadata/404 davranışını, eksik ürünleri
 ve katalog kullanılamadığında da sitemap'te tariflerin kalmasını denetler.
+
+## 18 Kasım 2026 tarifleri
+
+Mevcut üç tarife beş yeni tarif eklendi: sarımsaklı yoğurtlu çılbır, gün kurusu
+kayısılı bulgur pilavı, sarı kuru kayısı hoşafı, dut pekmezli tahinli yoğurt ve
+dut kurulu yulaf kurabiyesi. Metinler özgündür; mizah, ölçülerin ve pişirme
+işaretlerinin önüne geçmeden gündelik mutfak anlatısına katılır.
+
+Ürünler ve web slug'ları 18 Kasım 2026'da [canlı katalog özetinden](https://apuhanciftligi.com/llms.txt)
+doğrulandı: `yumurta`, `gun-kurusu-kayisi`, `sari-kuru-kayisi`, `dut-pekmezi`
+ve `dut-kurusu`. Kayısı çekirdeğinin tatlı/acı ve iç/kabuklu bilgisi
+doğrulanmadığından tariflerde kullanılmadı. Yoğurt, tahin ve ceviz gibi diğer
+malzemeler alışveriş malzemesidir; çiftliğin sattığı ürünler olarak sunulmaz.
+
+Bekleme süreleri pilavda demlenmeyi, hoşafta soğutmayı, kurabiyede soğumayı
+içerir. Kurabiye tarifi 12 adet, kişi başı 2 adet hesabıyla 6 porsiyondur.
+Bu ekleme kaynak kodu içeriğidir; canlıya çıkması için normal yayın süreci gerekir.
 
 ## Sonraki yazı fikirleri
 

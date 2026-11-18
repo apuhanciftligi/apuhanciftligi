@@ -5,9 +5,9 @@ import { buildPageMetadata } from "@/features/storefront/application/page-metada
 import { RecipeIndex } from "@/features/content/ui/recipe-index";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Köy yumurtalı ev tarifleri",
+  title: "Yumurta, kayısı ve dut pekmeziyle ev tarifleri",
   description:
-    "Köy yumurtalı menemen ve fırında yumurtalı patates gibi ölçülü, adım adım ev tarifleri. Apuhan Çiftliği'nin mutfağından.",
+    "Köy yumurtası, kuru kayısı, dut kurusu ve dut pekmeziyle çılbır, bulgur pilavı, hoşaf ve kurabiye. Ölçülü, adım adım Apuhan Çiftliği tarifleri.",
   canonical: "/tarifler",
 });
 

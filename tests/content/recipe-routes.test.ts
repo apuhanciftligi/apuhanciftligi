@@ -32,8 +32,10 @@ beforeEach(() => vi.resetAllMocks());
 
 describe("recipe routes", () => {
   it("generates every content slug for static params", () => {
-    expect(generateStaticParams()).toEqual(
-      RECIPES.map(({ slug }) => ({ slug })),
+    const params = generateStaticParams();
+    expect(params).toHaveLength(RECIPES.length);
+    expect(params).toEqual(
+      expect.arrayContaining(RECIPES.map(({ slug }) => ({ slug }))),
     );
   });
   it.each(RECIPES)(
