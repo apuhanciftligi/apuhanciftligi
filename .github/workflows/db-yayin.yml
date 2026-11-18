@@ -236,7 +236,18 @@ jobs:
               echo "Vercel yayın durumu: $state"
               case "$state" in
                 success) exit 0 ;;
-                failure|error) echo "Vercel yayını başarısız oldu ($state). Vercel panelinde 'Deployments' bölümüne bakın." | tee "$RUNNER_TEMP/err.txt"; exit 1 ;;
+                failure|error)
+                  # Put Vercel's own reason in the issue (e.g. "Deployment was blocked" plus the
+                  # commit status that says why), so nobody has to dig through the Vercel panel.
+                  why=$(gh api "repos/${{ github.repository }}/deployments/$id/statuses" --jq '.[0].description // empty' || true)
+                  detail=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/statuses" \
+                    --jq '[.[] | select(.state == "failure" or .state == "error") | .description // empty] | unique | join("\n")' || true)
+                  {
+                    echo "Vercel yayını başarısız oldu ($state). Vercel panelinde 'Deployments' bölümüne bakın."
+                    if [ -n "$why" ]; then echo "Vercel: $why"; fi
+                    if [ -n "$detail" ]; then echo "$detail"; fi
+                  } | tee "$RUNNER_TEMP/err.txt"
+                  exit 1 ;;
               esac
             elif [ "$(date +%s)" -gt $(( deadline - 600 )) ] && [ "$seen" = "0" ]; then
               # Five minutes in and GitHub has never heard of a deployment: Vercel may simply
@@ -273,12 +284,16 @@ jobs:
         if: failure() && env.PROVA != 'true'
         env:
           PRS: ${{ steps.prs.outputs.numbers }}
+          PENDING: ${{ steps.durum.outputs.pending }}
+          # Empty when the state step never finished: then "nothing pending" is not known.
+          HAS_PENDING: ${{ steps.durum.outputs.has_pending }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           gh label create db-yayin-hata --color B60205 --description "Yayın hattı bir aşamada durdu" 2>/dev/null || true
           [ -f "$RUNNER_TEMP/err.txt" ] || echo "Ayrıntı için çalıştırma kaydına bakın." > "$RUNNER_TEMP/err.txt"
           node scripts/db/run-render.mjs failure --stage "${STAGE:-durum}" --sha "${{ github.sha }}" \
-            --run-url "$RUN_URL" --message-file "$RUNNER_TEMP/err.txt" --prs "$PRS" > issue.md
+            --run-url "$RUN_URL" --message-file "$RUNNER_TEMP/err.txt" --prs "$PRS" \
+            --pending "$PENDING" --pending-known "${HAS_PENDING:+true}" > issue.md
           open=$(gh issue list --label db-yayin-hata --state open --json number --jq '.[0].number // empty')
           if [ -n "$open" ]; then
             gh issue comment "$open" --body-file issue.md

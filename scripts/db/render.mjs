@@ -230,13 +230,37 @@ const STAGE_TEXT = {
   },
 };
 
-export function renderFailureIssue({ stage, sha, runUrl, message, prNumbers = [], secrets = [] }) {
-  const s = STAGE_TEXT[stage] ?? {
+// The late stages assume migrations were applied. When the run knew nothing was pending, that
+// assumption is false and would send the reader hunting for a schema change that never happened.
+const NOTHING_PENDING_SITE = {
+  dogrula: "Veritabanında uygulanacak değişiklik yoktu; doğrulama başarısız oldu, site yayınlanmadı (eski sürümde çalışıyor).",
+  yayinla: "Veritabanında uygulanacak değişiklik yoktu. Yeni kod yayınlanamadı; site eski sürümde, değişmemiş veritabanıyla sorunsuz çalışıyor.",
+};
+
+// Vercel refuses deployments of commits whose GitHub author is not on the Vercel team. Retrying
+// deploys the same commit and is refused again, so the generic "Run workflow" advice is wrong.
+const VERCEL_AUTHOR_BLOCKED = /must have access to the project on Vercel/i;
+const VERCEL_AUTHOR_BLOCKED_YAP =
+  "Vercel, bu değişikliği birleştiren GitHub hesabının Vercel ekibinde olmadığı için yayını engelledi. 'Run workflow' ile tekrar denemek İŞE YARAMAZ (aynı commit yine engellenir). Çözüm: sonraki PR'ı Vercel ekibindeki hesapla (apuhanciftligi) birleştirin; o yayın bekleyen değişiklikleri de yayınlar. Ya da bu hesabı Vercel ekibine ekleyin.";
+
+/**
+ * @param {{ stage: string, sha?: string, runUrl: string, message?: string | null, prNumbers?: number[],
+ *   secrets?: Array<string | undefined>, pending?: string[] | null }} input
+ *   `pending`: migrations this run found waiting (known), or null when the run never learned it.
+ */
+export function renderFailureIssue({ stage, sha, runUrl, message, prNumbers = [], secrets = [], pending = null }) {
+  const base = STAGE_TEXT[stage] ?? {
     ad: stage,
     db: "belirsiz",
     site: "Site durumu belirsiz; Vercel panelinden bakın.",
     yap: "Hata kaydını Claude'a ver.",
   };
+  const s = { ...base };
+  if (Array.isArray(pending) && pending.length === 0 && s.db !== false) {
+    s.db = false;
+    s.site = NOTHING_PENDING_SITE[stage] ?? s.site;
+  }
+  if (VERCEL_AUTHOR_BLOCKED.test(message ?? "")) s.yap = VERCEL_AUTHOR_BLOCKED_YAP;
   const dbText = s.db === true ? "**Evet**, veritabanı güncellendi." : s.db === false ? "**Hayır**, veritabanı değişmedi." : "**Belirsiz** — kontrol edilmeli.";
   return [
     `## 🚨 Yayın durdu: ${s.ad}`,
