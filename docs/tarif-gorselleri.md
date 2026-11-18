@@ -1,6 +1,90 @@
 # Tarif görsellerinin üretim kaydı
 
-## 2026-11-18: Beş yeni tarif
+## 2026-11-18: İkinci seri
+
+Beş yeni görsel yerleşik `image_gen` aracıyla, her tarif için ayrı bir çağrıda
+üretildi. CLI/API fallback kullanılmadı. Fotoğraf gerçekçiliğinde yapay zekâ
+görselleridir; gerçek mutfak veya çiftlik çekimi değildir. Üretilen PNG'ler,
+Next.js ile zaten kurulu `sharp` kullanılarak kompozisyon değiştirilmeden
+1200×900 WebP dosyalarına dönüştürüldü (kalite: 84).
+
+### ispanakli-firin-omleti
+
+Dosya: `public/tarifler/ispanakli-firin-omleti.webp`
+
+Son üretim prompt'u:
+
+```text
+Use case: photorealistic-natural.
+Asset type: finished-dish photograph for a Turkish farm storefront recipe index and recipe page.
+Primary request: ispanakli firin omleti, a home-baked spinach, egg and white cheese omelet in a square ceramic baking dish.
+Subject: a modest 20 by 20 cm cream ceramic baking dish filled with a shallow golden baked omelet, cooked chopped dark green spinach and small white brined cheese pieces distributed throughout. The top is lightly browned, egg fully set, no raw liquid. One of four square servings is slightly lifted onto a small plate beside the dish, revealing spinach in a soft fully cooked egg interior. No pastry crust, no tomatoes, no mushrooms, no whole sunny-side eggs, no garnish.
+Style/medium: believable editorial food photography, naturally imperfect edible textures, soft window daylight, matte pale stone tabletop and oatmeal linen. Landscape 4:3 framing, three-quarter view, dish central with safe margins for responsive crops, gently soft background.
+Constraints: one full-bleed food photo, no people, hands, text, logos, packaging, watermark, collage, excessive props, or webpage. Save the image file for use in the project.
+```
+
+### gun-kurusu-kayisili-mercimek-salatasi
+
+Dosya: `public/tarifler/gun-kurusu-kayisili-mercimek-salatasi.webp`
+
+Son üretim prompt'u:
+
+```text
+Use case: photorealistic-natural.
+Asset type: finished-dish photograph for a Turkish farm storefront recipe index and recipe page.
+Primary request: gun kurusu kayisili mercimek salatasi, a Turkish green lentil salad with sun-dried apricots, walnuts, spring onions and parsley.
+Subject: one modest shallow cream ceramic salad bowl with cooked green-brown lentils that retain their individual shapes, small dark amber-brown sun-dried apricot cubes, rough walnut chunks, finely chopped fresh parsley and thinly sliced spring onion. Light olive oil and lemon dressing, no pooled sauce. Naturally mixed with lentils dominant and apricot a modest accent. No fresh orange apricot halves, tomatoes, red pepper, pomegranate, cheese, meat, rice or bulgur.
+Style/medium: believable editorial food photography, naturally imperfect edible textures, soft window daylight, matte pale stone tabletop and oatmeal linen. Landscape 4:3 framing, three-quarter view, bowl central with safe margins for responsive crops, gently soft background.
+Constraints: one full-bleed food photo, no people, hands, text, logos, packaging, watermark, collage, excessive props, or webpage. Save the image file for use in the project.
+```
+
+### sari-kuru-kayisili-irmik-tatlisi
+
+Dosya: `public/tarifler/sari-kuru-kayisili-irmik-tatlisi.webp`
+
+Son üretim prompt'u:
+
+```text
+Use case: photorealistic-natural.
+Asset type: finished-dish photograph for a Turkish farm storefront recipe index and recipe page.
+Primary request: sari kuru kayisili irmik tatlisi, chilled Turkish milk and semolina pudding with dried yellow apricot sauce.
+Subject: three modest small clear glass dessert bowls of ivory milk semolina pudding with a thick yellow-orange apricot topping made of chopped softened dried apricot pieces and a little mashed apricot sauce. The pudding is fully set yet spoonable, with fine semolina texture, not layered cake or gelatin. The apricot topping remains a distinct layer over the creamy pudding. All three bowls are fully inside the frame. No fresh fruit halves, nuts, pistachios, mint, cinnamon garnish, caramel, cookies or custard-yellow pudding.
+Style/medium: believable editorial food photography, naturally imperfect edible textures, soft window daylight, matte pale stone tabletop and oatmeal linen. Landscape 4:3 framing, three-quarter view, bowls central with safe margins for responsive crops, gently soft background.
+Constraints: one full-bleed food photo, no people, hands, text, logos, packaging, watermark, collage, excessive props, or webpage. Save the image file for use in the project.
+```
+
+### dut-kurulu-cevizli-eriste
+
+Dosya: `public/tarifler/dut-kurulu-cevizli-eriste.webp`
+
+Son üretim prompt'u:
+
+```text
+Use case: photorealistic-natural.
+Asset type: finished-dish photograph for a Turkish farm storefront recipe index and recipe page.
+Primary request: dut kurulu cevizli eriste, short Turkish flat egg noodles with butter, dried white mulberries and walnuts.
+Subject: one modest shallow cream ceramic plate of cooked short flat rustic eriste strips, lightly glossy with melted butter, mixed with rough walnut chunks and a modest scattering of softened pale tan dried white mulberries showing their distinctive small knobbly segmented shape. A little fine black pepper. Noodles dominate; dried mulberries are a small accent, not giant berries. No parsley, other herbs, cheese, cream sauce, meat, raisins, apricots, red fruits, spaghetti or farfalle pasta.
+Style/medium: believable editorial food photography, naturally imperfect edible textures, soft window daylight, matte pale stone tabletop and oatmeal linen. Landscape 4:3 framing, three-quarter view, plate central with safe margins for responsive crops, gently soft background.
+Constraints: one full-bleed food photo, no people, hands, text, logos, packaging, watermark, collage, excessive props, or webpage. Save the image file for use in the project.
+```
+
+### dut-pekmezli-un-helvasi
+
+Dosya: `public/tarifler/dut-pekmezli-un-helvasi.webp`
+
+Son üretim prompt'u:
+
+```text
+Use case: photorealistic-natural.
+Asset type: finished-dish photograph for a Turkish farm storefront recipe index and recipe page.
+Primary request: dut pekmezli un helvasi, Turkish flour halva made with butter, mulberry molasses and walnuts.
+Subject: one small cream ceramic dessert plate with three modest spoon-shaped oval scoops of warm brown flour halva. Dense fine-grained toasted flour texture, soft but holding spoon ridges, small walnut fragments mixed through and a couple visible at the surface. Color warm medium brown from toasted flour and dark mulberry molasses. This is homemade flour halva, not tahini halva, cake, ice cream, semolina pudding or chocolate. No syrup poured over, no ice cream, no mint, no pistachio, no powdered sugar and no garnish outside the recipe.
+Style/medium: believable editorial food photography, naturally imperfect edible textures, soft window daylight, matte pale stone tabletop and oatmeal linen. Landscape 4:3 framing, three-quarter view, plate central with safe margins for responsive crops, gently soft background.
+Constraints: one full-bleed food photo, no people, hands, text, logos, packaging, watermark, collage, excessive props, or webpage. Save the image file for use in the project.
+```
+
+
+## 2026-11-18: İlk seri
 
 Yerleşik `image_gen` aracıyla her tarif için ayrı bir çağrıda üretildi. CLI/API
 fallback kullanılmadı. Bunlar fotoğraf gerçekçiliğinde yapay zekâ görselleridir;

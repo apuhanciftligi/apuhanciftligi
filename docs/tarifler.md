@@ -24,7 +24,7 @@ elle bir şey yapılmayan süredir. Google'a giden toplam süreye eklenir, sayfa
 
 ## Fotoğraflar
 
-Sekiz tarifin her biri `public/tarifler/` altında ayrı bir WebP görseli kullanır.
+On üç tarifin her biri `public/tarifler/` altında ayrı bir WebP görseli kullanır.
 Bu görseller yapay zekâyla üretildi; üretim yöntemi ve kullanılan prompt'lar
 `docs/tarif-gorselleri.md` dosyasında kayıtlıdır. Gerçek çiftlik çekimi değildir.
 İleride kendi yemek fotoğraflarınızla değiştirebilirsiniz; görseli değiştirirken
@@ -55,6 +55,22 @@ malzemeler alışveriş malzemesidir; çiftliğin sattığı ürünler olarak su
 Bekleme süreleri pilavda demlenmeyi, hoşafta soğutmayı, kurabiyede soğumayı
 içerir. Kurabiye tarifi 12 adet, kişi başı 2 adet hesabıyla 6 porsiyondur.
 Bu ekleme kaynak kodu içeriğidir; canlıya çıkması için normal yayın süreci gerekir.
+
+## 18 Kasım 2026: İkinci seri
+
+İlk sekiz tarife beş yeni tarif eklendi: ıspanaklı fırın omleti, gün kurusu
+kayısılı mercimek salatası, sarı kuru kayısılı irmik tatlısı, dut kurulu cevizli
+erişte ve dut pekmezli un helvası. Ürün bağlantıları aynı gün canlı katalogdan
+yeniden doğrulandı. Diğer alışveriş malzemeleri çiftlik ürünü olarak tanıtılmaz.
+
+Her tarif ayrı bir görsel, açık porsiyon hesabı ve pişme işaretleri kullanır.
+Omletin hazırlık süresi sebzeleri ılıtmayı da içerir; fırından sonraki 5 dakika
+bekleme alanındadır. Mercimeğin 15 dakikalık ılıması, irmik tatlısının 30 dakika
+ilk sıcağını atması ve en az 120 dakika soğuması, helvanın 10 dakika
+dinlenmesi toplam sürelere dahildir. Erişte dört küçük porsiyon verir.
+
+Bu ikinci seri incelemeye sunulan kaynak kodu değişikliğidir; yayımlanması için
+normal PR ve yayın süreci izlenir. Tarifler mutfakta denenmedi.
 
 ## Sonraki yazı fikirleri
 
