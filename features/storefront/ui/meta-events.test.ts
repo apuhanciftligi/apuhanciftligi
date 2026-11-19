@@ -57,6 +57,7 @@ const EGGS: Product = {
   step: 1,
   current_unit_price_minor: 10_000,
   discount_unit_price_minor: null,
+  vat_rate: 1,
   // Graduated: the 5th package onward is 80 ₺.
   price_tiers: [{ min_qty: 5, unit_price_minor: 8_000 }],
   active: true,

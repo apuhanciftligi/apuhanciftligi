@@ -2,7 +2,7 @@
 
 /**
  * Save a product's pricing: its flat/base unit price, its optional sale price
- * ("indirimli fiyat") + its volume tiers.
+ * ("indirimli fiyat"), its KDV rate + its volume tiers.
  * Admin-only. Affects FUTURE orders only — existing orders keep their frozen
  * line prices (snapshot model).
  */
@@ -14,6 +14,7 @@ import {
   replaceProductTiers,
   updateProductBasePrice,
 } from "@/features/products/infrastructure/product.repository";
+import { vatRateSchema } from "@/features/products/domain/vat";
 import { logAudit } from "@/shared/audit/log-audit";
 import { AppError, ValidationError } from "@/shared/errors/app-error";
 import { err, ok, type Result } from "@/shared/result";
@@ -29,6 +30,8 @@ const schema = z.object({
     .positive("İndirimli fiyat sıfırdan büyük olmalı.")
     .nullable()
     .optional(),
+  /** KDV rate: omitted keeps it (the MCP pricing tool doesn't send it). */
+  vat_rate: vatRateSchema.optional(),
   tiers: z
     .array(
       z.object({
@@ -56,7 +59,7 @@ export async function saveProductPricingAction(
       }),
     );
   }
-  const { product_key, base_price_minor, discount_unit_price_minor, tiers } =
+  const { product_key, base_price_minor, discount_unit_price_minor, vat_rate, tiers } =
     parsed.data;
 
   if (discount_unit_price_minor != null && discount_unit_price_minor >= base_price_minor) {
@@ -78,6 +81,7 @@ export async function saveProductPricingAction(
     product_key,
     base_price_minor,
     discount_unit_price_minor,
+    vat_rate,
   );
   if (!baseRes.ok) return err(baseRes.error);
 
@@ -92,6 +96,7 @@ export async function saveProductPricingAction(
     after: {
       base_price_minor,
       ...(discount_unit_price_minor !== undefined ? { discount_unit_price_minor } : {}),
+      ...(vat_rate !== undefined ? { vat_rate } : {}),
       tier_count: tiers.length,
     },
   });

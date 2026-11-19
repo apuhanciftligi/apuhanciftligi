@@ -28,6 +28,7 @@ const product: Product = {
   image_alt: null,
   current_unit_price_minor: 12500,
   discount_unit_price_minor: null,
+  vat_rate: 1,
   price_tiers: [],
   active: true,
   sort_order: 0,

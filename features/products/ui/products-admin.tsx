@@ -37,6 +37,7 @@ import { updateProductSortOrderAction } from "@/features/products/application/se
 import { ProductFormDialog } from "@/features/products/ui/product-form";
 import { ProductImageDropzone } from "@/features/products/ui/product-image-dropzone";
 import { formatTRY4, parseTRY2, parseTRY4 } from "@/features/products/ui/money";
+import { VAT_RATES, type VatRate } from "@/features/products/domain/vat";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +49,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 
@@ -57,6 +65,11 @@ interface TierRow {
   min_qty: string;
   price: string; // TRY
 }
+
+const VAT_RATE_OPTIONS = VAT_RATES.map((rate) => ({
+  value: String(rate),
+  label: rate === 0 ? "%0 (istisna)" : `%${rate}`,
+}));
 
 /** Kuruş → "125,50" for an editable price field. */
 function toPriceText(minor: number): string {
@@ -72,6 +85,7 @@ function PricingEditor({ product }: { product: Product }) {
       ? ""
       : toPriceText(product.discount_unit_price_minor),
   );
+  const [vatRate, setVatRate] = useState<VatRate>(product.vat_rate);
   const [tiers, setTiers] = useState<TierRow[]>(() =>
     product.price_tiers.map((t) => ({
       min_qty: String(t.min_qty),
@@ -118,6 +132,7 @@ function PricingEditor({ product }: { product: Product }) {
         product_key: product.key,
         base_price_minor,
         discount_unit_price_minor,
+        vat_rate: vatRate,
         tiers: parsedTiers,
       });
       if (result.ok) {
@@ -183,6 +198,35 @@ function PricingEditor({ product }: { product: Product }) {
         {salePercent !== null
           ? `Mağazada normal fiyat üstü çizili, yanında %${salePercent} indirim görünür. Kaldırmak için alanı boşaltıp kaydet.`
           : "Boş bırakırsan indirim yok. Doldurursan mağazada normal fiyat üstü çizili görünür; kademeli fiyat daha ucuzsa müşteri yine onu öder."}
+      </p>
+
+      <div className="flex flex-col gap-1.5 sm:max-w-44">
+        <Label htmlFor={`vat-${product.key}`} className="text-xs">
+          KDV oranı
+        </Label>
+        <Select
+          value={String(vatRate)}
+          onValueChange={(value) => setVatRate(Number(value) as VatRate)}
+          items={VAT_RATE_OPTIONS}
+        >
+          <SelectTrigger
+            id={`vat-${product.key}`}
+            className="w-full"
+            aria-describedby={`vat-hint-${product.key}`}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {VAT_RATE_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <p id={`vat-hint-${product.key}`} className="text-xs text-muted-foreground">
+        Fiyatlar KDV dahil; faturada matrah ve KDV bu orandan ayrılır. Gıda ürünleri %1, gıda dışı ürünler genelde %20.
       </p>
 
       <div className="space-y-2">

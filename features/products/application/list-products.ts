@@ -1,6 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
+import { vatRateSchema } from "@/features/products/domain/vat";
 import { mapProductRows } from "@/features/products/infrastructure/product.mapper";
 
 import { ExternalApiError } from "@/shared/errors/app-error";
@@ -25,7 +26,7 @@ export type {
 // as a dedicated follow-up so a stale cache can't ever serve a wrong price.
 
 const PRODUCT_COLUMNS =
-  "key, display_name, web_slug, unit, unit_label, package_size, min_qty, step, current_unit_price_minor, discount_unit_price_minor, active, fulfillment_type, is_web_visible, is_featured, web_description, web_long_description, image_path, image_alt, sort_order";
+  "key, display_name, web_slug, unit, unit_label, package_size, min_qty, step, current_unit_price_minor, discount_unit_price_minor, vat_rate, active, fulfillment_type, is_web_visible, is_featured, web_description, web_long_description, image_path, image_alt, sort_order";
 
 /**
  * Load every product's volume tiers, grouped by product key. Tiers live in
@@ -101,11 +102,11 @@ export async function listAllProducts(): Promise<
   // The RPC returns the catalog already ordered (active first, sort_order,
   // display_name) with total_quantity_sold attached.
   // Keep the existing RPC contract compatible with the previous app release.
-  // Slugs (and the long page text and sale price, which the RPC also
+  // Slugs (and the long page text, sale price and KDV rate, which the RPC also
   // predates) are fetched once for the whole admin list, never per product.
   const [{ data, error }, slugResult] = await Promise.all([
     supabase.rpc("list_products_with_sales"),
-    supabase.from("products").select("key, web_slug, web_long_description, discount_unit_price_minor"),
+    supabase.from("products").select("key, web_slug, web_long_description, discount_unit_price_minor, vat_rate"),
   ]);
 
   if (error) {
@@ -123,6 +124,7 @@ export async function listAllProducts(): Promise<
     web_slug: z.string().nullable(),
     web_long_description: z.string().nullable(),
     discount_unit_price_minor: z.coerce.number().positive().nullable(),
+    vat_rate: vatRateSchema,
   }))
     .safeParse(slugResult.data ?? []);
   if (!slugs.success) {
@@ -137,5 +139,8 @@ export async function listAllProducts(): Promise<
     web_slug: extrasByKey.get(row.key)?.web_slug ?? null,
     web_long_description: extrasByKey.get(row.key)?.web_long_description ?? null,
     discount_unit_price_minor: extrasByKey.get(row.key)?.discount_unit_price_minor ?? null,
+    // No fallback: a product missing from this read fails mapping instead of
+    // being shown (and later invoiced) with a guessed rate.
+    vat_rate: extrasByKey.get(row.key)?.vat_rate,
   })), tiersByProduct);
 }

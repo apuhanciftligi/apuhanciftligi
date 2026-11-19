@@ -7,6 +7,7 @@
  * `quantity % step === 0`. cheese/yogurt are sold in 0.5 kg increments.
  */
 import type { ProductPriceTier } from "@/features/products/domain/product-pricing";
+import type { VatRate } from "@/features/products/domain/vat";
 
 export type ProductUnit = "package" | "liter" | "kilogram" | "piece";
 
@@ -48,6 +49,8 @@ export interface Product {
    * strikes through the regular price.
    */
   readonly discount_unit_price_minor: number | null;
+  /** KDV rate (percent). Prices are VAT-inclusive; invoices split by this. */
+  readonly vat_rate: VatRate;
   /** Volume tiers (sorted by min_qty asc). Empty for flat-priced products. */
   readonly price_tiers: readonly ProductPriceTier[];
   readonly active: boolean;
