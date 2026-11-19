@@ -13,6 +13,7 @@ import {
 } from "@/features/products/domain/product-image";
 import type { ProductPriceTier } from "@/features/products/domain/product-pricing";
 import type { ProductMetadata } from "@/features/products/domain/product.schema";
+import type { VatRate } from "@/features/products/domain/vat";
 import { slugifyProductKey } from "@/features/products/domain/product-key";
 import { deriveProductWebSlug } from "@/features/products/domain/product-web-slug";
 
@@ -360,13 +361,15 @@ export async function deleteProductImageObject(
 
 /**
  * Update a product's flat/base unit price and, when given, its sale price
- * (kuruş) in one statement. `discountUnitPriceMinor`: a number sets the sale,
- * null clears it, undefined leaves it as is.
+ * (kuruş) and KDV rate in one statement. `discountUnitPriceMinor`: a number
+ * sets the sale, null clears it, undefined leaves it as is. `vatRate`:
+ * undefined leaves it as is.
  */
 export async function updateProductBasePrice(
   productKey: string,
   basePriceMinor: number,
   discountUnitPriceMinor?: number | null,
+  vatRate?: VatRate,
 ): Promise<Result<void, ExternalApiError>> {
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
@@ -376,6 +379,7 @@ export async function updateProductBasePrice(
       ...(discountUnitPriceMinor !== undefined
         ? { discount_unit_price_minor: discountUnitPriceMinor }
         : {}),
+      ...(vatRate !== undefined ? { vat_rate: vatRate } : {}),
       updated_at: new Date().toISOString(),
     })
     .eq("key", productKey);

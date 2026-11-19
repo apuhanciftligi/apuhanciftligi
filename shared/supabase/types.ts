@@ -1270,6 +1270,7 @@ export type Database = {
           unit: string
           unit_label: string
           updated_at: string
+          vat_rate: number
           web_description: string | null
           web_long_description: string | null
           web_slug: string | null
@@ -1293,6 +1294,7 @@ export type Database = {
           unit: string
           unit_label: string
           updated_at?: string
+          vat_rate?: number
           web_description?: string | null
           web_long_description?: string | null
           web_slug?: string | null
@@ -1316,6 +1318,7 @@ export type Database = {
           unit?: string
           unit_label?: string
           updated_at?: string
+          vat_rate?: number
           web_description?: string | null
           web_long_description?: string | null
           web_slug?: string | null

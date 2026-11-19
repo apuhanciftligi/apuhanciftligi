@@ -8,6 +8,7 @@ import {
   productUnitSchema,
   productWebSlugSchema,
 } from "@/features/products/domain/product.schema";
+import { vatRateSchema } from "@/features/products/domain/vat";
 import { ExternalApiError } from "@/shared/errors/app-error";
 import { logger } from "@/shared/logger";
 import { err, ok, type Result } from "@/shared/result";
@@ -26,6 +27,8 @@ const productRowSchema = z.object({
   current_unit_price_minor: z.coerce.number().nonnegative(),
   // Optional: the admin RPC row predates the column (merged in separately).
   discount_unit_price_minor: z.coerce.number().positive().nullable().optional(),
+  // Required: an invoice must never fall back to a guessed rate.
+  vat_rate: vatRateSchema,
   active: z.boolean(),
   fulfillment_type: fulfillmentTypeSchema,
   is_web_visible: z.boolean().nullable(),

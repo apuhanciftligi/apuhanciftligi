@@ -17,6 +17,7 @@ const row = {
   image_path: null,
   image_alt: null,
   current_unit_price_minor: "12500",
+  vat_rate: "1",
   active: true,
   sort_order: 0,
 };
@@ -62,6 +63,13 @@ describe("product row mapping", () => {
     expect(cleared.ok && cleared.value[0]?.discount_unit_price_minor).toBe(null);
     const missing = mapProductRows([row], new Map());
     expect(missing.ok && missing.value[0]?.discount_unit_price_minor).toBe(null);
+  });
+  it("maps the KDV rate and rejects a missing or non-statutory one", () => {
+    const mapped = mapProductRows([{ ...row, vat_rate: 20 }], new Map());
+    expect(mapped.ok && mapped.value[0]?.vat_rate).toBe(20);
+    const { vat_rate: _omit, ...withoutVat } = row;
+    expect(mapProductRows([withoutVat], new Map()).ok).toBe(false);
+    expect(mapProductRows([{ ...row, vat_rate: 18 }], new Map()).ok).toBe(false);
   });
   it("preserves a nullable URL for legacy inserts", () => {
     const result = mapProductRows([{ ...row, web_slug: null }], new Map());

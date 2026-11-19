@@ -22,6 +22,7 @@ function makeProduct(overrides: Partial<Product> = {}): Product {
     step: 0.5,
     current_unit_price_minor: 10000,
     discount_unit_price_minor: null,
+    vat_rate: 1,
     price_tiers: [],
     active: true,
     fulfillment_type: "delivery",
