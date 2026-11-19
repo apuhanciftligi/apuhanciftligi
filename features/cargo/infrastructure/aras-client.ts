@@ -15,6 +15,7 @@ import { z } from "zod";
 import { ExternalApiError } from "@/shared/errors/app-error";
 import { logger } from "@/shared/logger";
 import { err, ok, type Result } from "@/shared/result";
+import { escapeXml, readTag } from "@/shared/xml";
 
 import type { ArasOrder } from "@/features/cargo/domain/aras-order";
 
@@ -40,30 +41,6 @@ const resultSchema = z.object({
   resultCode: z.string().trim().min(1),
   resultMessage: z.string().default(""),
 });
-
-function escapeXml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
-
-function unescapeXml(value: string): string {
-  return value
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&");
-}
-
-/** Text of the first `<tag>` in a SOAP reply (namespace prefixes ignored). */
-function readTag(xml: string, tag: string): string | undefined {
-  const match = new RegExp(`<(?:\\w+:)?${tag}>([\\s\\S]*?)</(?:\\w+:)?${tag}>`).exec(xml);
-  return match?.[1] === undefined ? undefined : unescapeXml(match[1]);
-}
 
 function el(tag: string, value: string | null): string {
   return value === null ? "" : `<${tag}>${escapeXml(value)}</${tag}>`;

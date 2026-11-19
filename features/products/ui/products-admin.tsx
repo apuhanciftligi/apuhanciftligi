@@ -37,7 +37,7 @@ import { updateProductSortOrderAction } from "@/features/products/application/se
 import { ProductFormDialog } from "@/features/products/ui/product-form";
 import { ProductImageDropzone } from "@/features/products/ui/product-image-dropzone";
 import { formatTRY4, parseTRY2, parseTRY4 } from "@/features/products/ui/money";
-import { VAT_RATES, type VatRate } from "@/features/products/domain/vat";
+import { VAT_RATES, type VatRate } from "@/shared/vat";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

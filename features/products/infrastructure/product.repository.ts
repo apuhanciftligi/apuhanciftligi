@@ -13,7 +13,7 @@ import {
 } from "@/features/products/domain/product-image";
 import type { ProductPriceTier } from "@/features/products/domain/product-pricing";
 import type { ProductMetadata } from "@/features/products/domain/product.schema";
-import type { VatRate } from "@/features/products/domain/vat";
+import type { VatRate } from "@/shared/vat";
 import { slugifyProductKey } from "@/features/products/domain/product-key";
 import { deriveProductWebSlug } from "@/features/products/domain/product-web-slug";
 

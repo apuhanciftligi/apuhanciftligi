@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { splitVatInclusive, vatRateSchema } from "@/features/products/domain/vat";
+import { splitVatInclusive, vatRateSchema } from "@/shared/vat";
 
 describe("splitVatInclusive", () => {
   it("splits a 1% inclusive price into base and VAT", () => {
