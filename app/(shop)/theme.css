@@ -262,9 +262,10 @@
     -webkit-user-select: none;
     transition:
       transform 140ms var(--shop-ease-out),
+      translate 160ms var(--shop-ease-out),
       background-color 140ms ease,
       border-color 140ms ease,
-      box-shadow 140ms ease;
+      box-shadow 160ms ease;
   }
   .shop-press:active:not(:disabled, [aria-disabled="true"]) {
     transform: scale(0.97);
@@ -344,6 +345,16 @@
     cursor: not-allowed;
   }
 
+  /* Product card resting state. The shadow lives here rather than as a
+     utility on the element so the hover rule below (same layer) can raise it. */
+  .shop-card {
+    box-shadow: var(--shop-shadow-sm);
+    transition: box-shadow 300ms ease;
+  }
+  .shop-card-media img {
+    transition: scale 500ms var(--shop-ease-out);
+  }
+
   /* Hover only where a pointer can actually hover — on touch the browser
      leaves `:hover` stuck on the last tapped element. */
   @media (hover: hover) and (pointer: fine) {
@@ -359,6 +370,35 @@
     }
     .shop-btn[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"]) {
       background-color: var(--shop-red-soft);
+    }
+
+    /* The two main actions rise 2px under the pointer, with a deeper shadow
+       on the filled one. `translate`, not `transform`, so it composes with
+       the press scale above instead of replacing it; on pointer-down the
+       button settles back as it shrinks (same specificity, declared later).
+       Quiet/plain/danger stay flat: they are not what we invite a click on.
+       Under reduced motion the global rule makes this instant, which leaves
+       a 2px offset and a shadow — a state change, not movement. */
+    .shop-btn:is([data-variant="primary"], [data-variant="secondary"]):hover:not(:disabled, [aria-disabled="true"]) {
+      translate: 0 -2px;
+    }
+    .shop-btn[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]) {
+      box-shadow: var(--shop-shadow-md);
+    }
+    .shop-btn:is([data-variant="primary"], [data-variant="secondary"]):active:not(:disabled, [aria-disabled="true"]) {
+      translate: none;
+    }
+
+    /* Product card: the picture is the card's link, so the picture answers
+       the pointer — a slow 3% push-in plus a lifted card. Keyed on the
+       picture, not the whole card: the rest of the card (stepper, text) is
+       not one link and should not pretend to be. A card without a product
+       page (no link over the picture) does not react. */
+    .shop-card:has(.shop-card-media > a:hover) {
+      box-shadow: var(--shop-shadow-md);
+    }
+    .shop-card-media:has(> a:hover) img {
+      scale: 1.03;
     }
   }
 
