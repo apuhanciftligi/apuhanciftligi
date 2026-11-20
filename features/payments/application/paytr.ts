@@ -16,6 +16,7 @@ import {
   verifyOrderReturnToken,
   type BasketLine,
 } from "@/features/payments/domain/paytr";
+import { scheduleInvoiceProcessing } from "@/features/invoicing/application/process-invoices";
 import { requestPaytrToken } from "@/features/payments/infrastructure/paytr-client";
 import { recordCardPayment } from "@/features/payments/infrastructure/payment.repository";
 import { reportPurchaseToMeta } from "@/features/storefront/application/report-meta-purchase";
@@ -247,6 +248,9 @@ export async function handlePaytrCallback(payload: {
     // who closes the tab at the bank never reaches the return page's Pixel.
     const metaOutcome = await reportPurchaseToMeta(orderId);
     logger.info({ orderId, outcome: metaOutcome }, "paytr_meta_purchase");
+
+    // The booking may have made the order 'paid', which queued its invoice.
+    scheduleInvoiceProcessing();
   }
 
   return { ok: true };

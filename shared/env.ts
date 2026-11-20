@@ -102,6 +102,12 @@ const serverSchema = z.object({
   QNB_ERP_CODE: z.string().min(1).optional(),
   QNB_SELLER_TAX_OFFICE: z.string().min(1).optional(),
   QNB_TEST_MODE: z.enum(["0", "1"]).default("1"),
+  // VKN of the cargo company (Aras) printed as carrier on shipping-order
+  // invoices. Without it those invoices wait in "needs attention".
+  INVOICE_CARGO_CARRIER_VKN: z.string().regex(/^\d{10}$/, "INVOICE_CARGO_CARRIER_VKN 10 haneli olmalı").optional(),
+  // Vercel Cron sends "Authorization: Bearer $CRON_SECRET"; without it the
+  // cron endpoints refuse every call.
+  CRON_SECRET: z.string().min(16).optional(),
 
   // Observability.
   SENTRY_DSN: z.string().url().optional(),
@@ -170,6 +176,8 @@ const rawServer = isServer
       QNB_ERP_CODE: process.env.QNB_ERP_CODE,
       QNB_SELLER_TAX_OFFICE: process.env.QNB_SELLER_TAX_OFFICE,
       QNB_TEST_MODE: process.env.QNB_TEST_MODE,
+      INVOICE_CARGO_CARRIER_VKN: process.env.INVOICE_CARGO_CARRIER_VKN,
+      CRON_SECRET: process.env.CRON_SECRET,
       SENTRY_DSN: process.env.SENTRY_DSN,
       LOG_LEVEL: process.env.LOG_LEVEL,
       DEFAULT_TIMEZONE: process.env.DEFAULT_TIMEZONE,

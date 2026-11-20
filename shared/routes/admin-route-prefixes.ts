@@ -14,6 +14,7 @@ export const ADMIN_ROUTE_PREFIXES: ReadonlyArray<string> = [
   "/admin",
   "/animsaticilar",
   "/customers",
+  "/faturalar",
   "/finans",
   "/kargo",
   "/magaza-ayarlari",

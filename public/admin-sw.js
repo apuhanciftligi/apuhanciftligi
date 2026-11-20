@@ -35,6 +35,7 @@ const ADMIN_PREFIXES = [
   "/admin",
   "/animsaticilar",
   "/customers",
+  "/faturalar",
   "/finans",
   "/kargo",
   "/magaza-ayarlari",

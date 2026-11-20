@@ -195,6 +195,9 @@ export function invoiceProblems(doc: InvoiceDocument): string[] {
   } else if (!isTaxId(doc.buyer.taxId)) {
     problems.push("Firma VKN/TCKN 10 ya da 11 haneli olmalı.");
   }
+  if (!doc.buyer.address.city.trim() || !doc.buyer.address.district.trim()) {
+    problems.push("Teslimat adresinde il ya da ilçe eksik.");
+  }
   if (doc.lines.length === 0) problems.push("Faturada satır yok.");
   return problems;
 }

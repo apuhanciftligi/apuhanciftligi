@@ -39,6 +39,7 @@ export type AuditAction =
   | "product.archived"
   | "product.deleted"
   | "payment.recorded"
+  | "invoice.retried"
   | "payment.deleted"
   // PayTR webhook outcomes that leave no other durable trace. A successful
   // capture needs none — it becomes an order_payments row.
@@ -137,6 +138,7 @@ export type AuditEntityType =
   | "reminder"
   | "reminder_list"
   | "calendar"
+  | "invoice"
   | "calendar_event";
 
 /**
