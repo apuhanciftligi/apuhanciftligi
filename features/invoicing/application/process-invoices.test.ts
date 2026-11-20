@@ -13,9 +13,7 @@ vi.mock("@/shared/env", () => ({
     QNB_EARSIV_PASSWORD: "p",
     QNB_VKN: "0106106900",
     QNB_ERP_CODE: "QES00001",
-    QNB_SELLER_TAX_OFFICE: "Akçadağ",
     QNB_TEST_MODE: "1",
-    INVOICE_CARGO_CARRIER_VKN: undefined,
     LOG_LEVEL: "silent",
   },
 }));
@@ -49,6 +47,7 @@ const order: InvoiceOrder = {
   status: "confirmed",
   paymentStatus: "paid",
   paymentMethod: "credit_card",
+  source: "customer_web",
   paidAt: new Date(),
   totalMinor: 13000,
   deliveryFeeMinor: 0,

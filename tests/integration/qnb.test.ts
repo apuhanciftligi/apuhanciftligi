@@ -53,7 +53,7 @@ function testDocument(): InvoiceDocument {
     seller: {
       taxId: e.QNB_VKN ?? "",
       title: "Apuhan Çiftliği Test",
-      taxOffice: e.QNB_SELLER_TAX_OFFICE ?? "Akçadağ",
+      taxOffice: "Akçadağ",
       address,
       website: "https://apuhanciftligi.com",
     },

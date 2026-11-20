@@ -22,6 +22,7 @@ const order: InvoiceOrder = {
   status: "confirmed",
   paymentStatus: "paid",
   paymentMethod: "credit_card",
+  source: "customer_web",
   paidAt: new Date("2026-11-20T09:59:00Z"),
   totalMinor: 34000,
   deliveryFeeMinor: 9000,
@@ -49,23 +50,26 @@ describe("buildOrderInvoice", () => {
   });
 
   it("names the cargo company as carrier and calls the fee a cargo fee", () => {
-    const result = buildOrderInvoice({ ...order, fulfillmentChannel: "shipping", paymentMethod: "bank_transfer" }, ctx);
+    const result = buildOrderInvoice({ ...order, fulfillmentChannel: "shipping" }, ctx);
     if (!result.ok) throw new Error(result.problems.join(" "));
     expect(result.document.carrier).toEqual(aras);
     expect(result.document.lines.at(-1)?.name).toBe("Kargo ücreti");
-    expect(result.document.payment.method).toBe("bank_transfer");
   });
 
-  it("holds a shipping order when the cargo company is not configured", () => {
-    const result = buildOrderInvoice({ ...order, fulfillmentChannel: "shipping" }, { ...ctx, cargoCarrier: null });
-    expect(result.ok).toBe(false);
+  it("leaves havale, cash and admin-entered orders to manual invoicing", () => {
+    for (const patch of [
+      { paymentMethod: "bank_transfer" },
+      { paymentMethod: "cash_on_delivery" },
+      { source: "admin_manual" },
+    ]) {
+      expect(buildOrderInvoice({ ...order, ...patch }, ctx).ok).toBe(false);
+    }
   });
 
-  it("refuses orders that are not fully paid, cancelled or cash on delivery", () => {
+  it("refuses orders that are not fully paid or cancelled", () => {
     for (const patch of [
       { paymentStatus: "partial" },
       { status: "cancelled" },
-      { paymentMethod: "cash_on_delivery" },
     ]) {
       expect(buildOrderInvoice({ ...order, ...patch }, ctx).ok).toBe(false);
     }
