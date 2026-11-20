@@ -1,6 +1,7 @@
 import {
   CalendarDays,
   CalendarRange,
+  FileText,
   LayoutDashboard,
   ListChecks,
   type LucideIcon,
@@ -40,6 +41,7 @@ const URUNLER: AdminNavItem = { href: "/products", label: "Ürünler", icon: Tag
 const HARITA: AdminNavItem = { href: "/map", label: "Harita", icon: Map, exact: false };
 const ROTA: AdminNavItem = { href: "/routes", label: "Rota", icon: CalendarRange, exact: false };
 const KARGO: AdminNavItem = { href: "/kargo", label: "Kargo", icon: Truck, exact: false };
+const FATURALAR: AdminNavItem = { href: "/faturalar", label: "Faturalar", icon: FileText, exact: false };
 const REKLAM: AdminNavItem = { href: "/reklam", label: "Reklam", icon: Megaphone, exact: false };
 const VITRIN: AdminNavItem = { href: "/vitrin", label: "Vitrin", icon: Images, exact: false };
 const MAGAZA_AYARLARI: AdminNavItem = { href: "/magaza-ayarlari", label: "Mağaza ayarları", icon: Store, exact: false };
@@ -56,6 +58,7 @@ export const navItems: readonly AdminNavItem[] = [
   HARITA,
   ROTA,
   KARGO,
+  FATURALAR,
   REKLAM,
   VITRIN,
   MAGAZA_AYARLARI,

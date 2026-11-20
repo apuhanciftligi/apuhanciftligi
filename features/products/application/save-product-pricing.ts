@@ -14,7 +14,7 @@ import {
   replaceProductTiers,
   updateProductBasePrice,
 } from "@/features/products/infrastructure/product.repository";
-import { vatRateSchema } from "@/features/products/domain/vat";
+import { vatRateSchema } from "@/shared/vat";
 import { logAudit } from "@/shared/audit/log-audit";
 import { AppError, ValidationError } from "@/shared/errors/app-error";
 import { err, ok, type Result } from "@/shared/result";

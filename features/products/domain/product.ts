@@ -7,7 +7,7 @@
  * `quantity % step === 0`. cheese/yogurt are sold in 0.5 kg increments.
  */
 import type { ProductPriceTier } from "@/features/products/domain/product-pricing";
-import type { VatRate } from "@/features/products/domain/vat";
+import type { VatRate } from "@/shared/vat";
 
 export type ProductUnit = "package" | "liter" | "kilogram" | "piece";
 

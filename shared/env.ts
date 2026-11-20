@@ -88,6 +88,27 @@ const serverSchema = z.object({
   ARAS_TEST_MODE: z.enum(["0", "1"]).default("1"),
   ARAS_TRACKING_ACCOUNT_ID: z.string().min(1).optional(),
 
+  // QNB eSolutions e-invoicing (e-Arşiv + e-Fatura). Optional: invoicing is
+  // off unless every value below is set. Two separate service users (QNB
+  // issues one per product family). QNB_VKN is the SENDER's tax id
+  // (QNB's test VKN in test mode), QNB_ERP_CODE the integration code QNB
+  // assigns (test: QES00001; changes at go-live). QNB_SELLER_TAX_OFFICE is
+  // printed on every invoice. QNB_TEST_MODE "1" = QNB test endpoints.
+  QNB_EARSIV_USERNAME: z.string().min(1).optional(),
+  QNB_EARSIV_PASSWORD: z.string().min(1).optional(),
+  QNB_EFATURA_USERNAME: z.string().min(1).optional(),
+  QNB_EFATURA_PASSWORD: z.string().min(1).optional(),
+  QNB_VKN: z.string().regex(/^\d{10}$|^\d{11}$/, "QNB_VKN 10 haneli VKN ya da 11 haneli TCKN olmalı").optional(),
+  QNB_ERP_CODE: z.string().min(1).optional(),
+  QNB_SELLER_TAX_OFFICE: z.string().min(1).optional(),
+  QNB_TEST_MODE: z.enum(["0", "1"]).default("1"),
+  // VKN of the cargo company (Aras) printed as carrier on shipping-order
+  // invoices. Without it those invoices wait in "needs attention".
+  INVOICE_CARGO_CARRIER_VKN: z.string().regex(/^\d{10}$/, "INVOICE_CARGO_CARRIER_VKN 10 haneli olmalı").optional(),
+  // Vercel Cron sends "Authorization: Bearer $CRON_SECRET"; without it the
+  // cron endpoints refuse every call.
+  CRON_SECRET: z.string().min(16).optional(),
+
   // Observability.
   SENTRY_DSN: z.string().url().optional(),
   LOG_LEVEL: z
@@ -147,6 +168,16 @@ const rawServer = isServer
       ARAS_SETORDER_PASSWORD: process.env.ARAS_SETORDER_PASSWORD,
       ARAS_TEST_MODE: process.env.ARAS_TEST_MODE,
       ARAS_TRACKING_ACCOUNT_ID: process.env.ARAS_TRACKING_ACCOUNT_ID,
+      QNB_EARSIV_USERNAME: process.env.QNB_EARSIV_USERNAME,
+      QNB_EARSIV_PASSWORD: process.env.QNB_EARSIV_PASSWORD,
+      QNB_EFATURA_USERNAME: process.env.QNB_EFATURA_USERNAME,
+      QNB_EFATURA_PASSWORD: process.env.QNB_EFATURA_PASSWORD,
+      QNB_VKN: process.env.QNB_VKN,
+      QNB_ERP_CODE: process.env.QNB_ERP_CODE,
+      QNB_SELLER_TAX_OFFICE: process.env.QNB_SELLER_TAX_OFFICE,
+      QNB_TEST_MODE: process.env.QNB_TEST_MODE,
+      INVOICE_CARGO_CARRIER_VKN: process.env.INVOICE_CARGO_CARRIER_VKN,
+      CRON_SECRET: process.env.CRON_SECRET,
       SENTRY_DSN: process.env.SENTRY_DSN,
       LOG_LEVEL: process.env.LOG_LEVEL,
       DEFAULT_TIMEZONE: process.env.DEFAULT_TIMEZONE,

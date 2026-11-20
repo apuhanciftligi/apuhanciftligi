@@ -8,7 +8,7 @@ import {
   productUnitSchema,
   productWebSlugSchema,
 } from "@/features/products/domain/product.schema";
-import { vatRateSchema } from "@/features/products/domain/vat";
+import { vatRateSchema } from "@/shared/vat";
 import { ExternalApiError } from "@/shared/errors/app-error";
 import { logger } from "@/shared/logger";
 import { err, ok, type Result } from "@/shared/result";

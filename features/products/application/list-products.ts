@@ -1,7 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
-import { vatRateSchema } from "@/features/products/domain/vat";
+import { vatRateSchema } from "@/shared/vat";
 import { mapProductRows } from "@/features/products/infrastructure/product.mapper";
 
 import { ExternalApiError } from "@/shared/errors/app-error";

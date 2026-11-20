@@ -8,6 +8,7 @@
 import { revalidatePath } from "next/cache";
 
 import { getCurrentUser } from "@/features/auth/application/get-session";
+import { scheduleInvoiceProcessing } from "@/features/invoicing/application/process-invoices";
 import { getOrderById } from "@/features/orders/application/get-order";
 import { addPaymentSchema } from "@/features/orders/domain/payment";
 import {
@@ -70,6 +71,8 @@ export async function addPaymentAction(
     entity_id: order_id,
     after: { amount_minor, channel },
   });
+  // A payment that completes the total queues the order's invoice.
+  scheduleInvoiceProcessing();
   revalidatePath("/orders");
   revalidatePath(`/orders/${order_id}`);
   return { status: "success" };
@@ -112,6 +115,7 @@ export async function markOrderFullyPaidAction(input: {
     entity_id: order.id,
     after: { amount_minor: balance, channel, shortcut: "full" },
   });
+  scheduleInvoiceProcessing();
   revalidatePath("/orders");
   revalidatePath(`/orders/${order.id}`);
   return { status: "success" };
