@@ -48,7 +48,9 @@ describe("buildUblInvoice", () => {
     expect(readTag(archive, "ProfileID")).toBe("EARSIVFATURA");
     expect(readTag(archive, "IssueDate")).toBe("2026-11-20");
     expect(readTag(archive, "IssueTime")).toBe("02:30:00");
-    expect(archive).toContain("<cbc:ID>IsInternetSale</cbc:ID>");
+    expect(readTag(archive, "Note")).toBe("Sipariş No: APH-1042");
+    expect(archive).toContain("<cbc:Note>Gönderim Şekli: ELEKTRONIK</cbc:Note>");
+    expect(readTag(readTag(archive, "PaymentMeans") ?? "", "InstructionNote")).toBe("Kredi Kartı / Banka Kartı");
     expect(readTag(readTag(archive, "PaymentMeans") ?? "", "PaymentMeansCode")).toBe("48");
   });
 
@@ -77,7 +79,7 @@ describe("buildUblInvoice", () => {
       "APH2026000000002",
     );
     expect(readTag(xml, "ProfileID")).toBe("TEMELFATURA");
-    expect(xml).not.toContain("IsInternetSale");
+    expect(xml).not.toContain("Gönderim Şekli");
     const party = readTag(xml, "AccountingCustomerParty") ?? "";
     expect(party).toContain('<cbc:ID schemeID="VKN">1234567890</cbc:ID>');
     expect(readTag(party, "Name")).toBe("Örnek Gıda Ltd.");

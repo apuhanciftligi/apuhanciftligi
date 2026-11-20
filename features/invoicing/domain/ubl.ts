@@ -34,9 +34,13 @@ function formatQuantity(quantity: number): string {
   return String(Number(quantity.toFixed(3)));
 }
 
-/** Unit price = line base / quantity, 8 decimals at most, trailing zeros cut. */
+/**
+ * Unit price = line base / quantity, 4 decimals at most, trailing zeros cut.
+ * 4 places keep price × quantity equal to the line amount at the kuruş for
+ * every quantity we sell, without printing 742,57333333 on the invoice.
+ */
 function formatUnitPrice(netMinor: number, quantity: number): string {
-  return String(Number((netMinor / 100 / quantity).toFixed(8)));
+  return String(Number((netMinor / 100 / quantity).toFixed(4)));
 }
 
 function t(tag: string, value: string, attrs = ""): string {
@@ -132,10 +136,13 @@ function customer(doc: InvoiceDocument): string {
   );
 }
 
-/** UN/ECE 4461 payment means codes as GİB lists them for internet sales. */
-const PAYMENT_MEANS_CODE: Record<InvoicePaymentMethod, string> = {
-  card: "48", // KREDIKARTI/BANKAKARTI
-  bank_transfer: "30", // EFT/HAVALE
+/**
+ * UN/ECE 4461 payment means codes as GİB lists them for internet sales, plus
+ * the wording printed on the invoice (QNB's template shows only the note).
+ */
+const PAYMENT_MEANS: Record<InvoicePaymentMethod, { code: string; label: string }> = {
+  card: { code: "48", label: "Kredi Kartı / Banka Kartı" },
+  bank_transfer: { code: "30", label: "EFT / Havale" },
 };
 
 function taxSubtotal(taxableMinor: number, vatMinor: number, rate: number): string {
@@ -167,22 +174,6 @@ export function buildUblInvoice(
   const paidDate = formatInTimeZone(doc.payment.paidAt, TZ, "yyyy-MM-dd");
   const isArchive = channel === "earsiv";
 
-  // e-Arşiv only: delivered electronically, and an internet sale.
-  const archiveFlags: readonly (readonly [string, string])[] = [
-    ["SendType", "ELEKTRONIK"],
-    ["IsInternetSale", "true"],
-  ];
-  const additionalRefs = isArchive
-    ? archiveFlags
-        .map(
-          ([id, value]) =>
-            "<cac:AdditionalDocumentReference>" + t("cbc:ID", id) +
-            t("cbc:IssueDate", issueDate) + t("cbc:DocumentType", value) +
-            "</cac:AdditionalDocumentReference>",
-        )
-        .join("")
-    : "";
-
   // Internet-sale details (carrier, despatch date, payment). Mandatory on an
   // e-Arşiv internet sale and valid on e-Fatura too, so always written.
   const delivery =
@@ -195,8 +186,9 @@ export function buildUblInvoice(
     "</cac:Despatch></cac:Delivery>";
   const paymentMeans =
     "<cac:PaymentMeans>" +
-    t("cbc:PaymentMeansCode", PAYMENT_MEANS_CODE[doc.payment.method]) +
+    t("cbc:PaymentMeansCode", PAYMENT_MEANS[doc.payment.method].code) +
     t("cbc:PaymentDueDate", paidDate) +
+    t("cbc:InstructionNote", PAYMENT_MEANS[doc.payment.method].label) +
     "</cac:PaymentMeans>";
 
   const lines = totals.lines
@@ -236,7 +228,6 @@ export function buildUblInvoice(
     t("cbc:DocumentCurrencyCode", "TRY") +
     t("cbc:LineCountNumeric", String(totals.lines.length)) +
     "<cac:OrderReference>" + t("cbc:ID", doc.orderNumber) + t("cbc:IssueDate", paidDate) + "</cac:OrderReference>" +
-    additionalRefs +
     "<cac:Signature>" +
     t("cbc:ID", doc.seller.taxId, ' schemeID="VKN_TCKN"') +
     "<cac:SignatoryParty>" + partyId(doc.seller.taxId) + address(doc.seller.address) + "</cac:SignatoryParty>" +
