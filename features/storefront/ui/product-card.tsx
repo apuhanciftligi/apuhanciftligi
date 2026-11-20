@@ -58,8 +58,8 @@ export function ProductCard({
     // min-w-0: a grid item's default min-width is its content's min-content
     // width, not the grid track — without it a long unbreakable name or the
     // quantity control could push this card wider than its column.
-    <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-(--shop-shadow-sm)">
-      <div className="relative aspect-[4/3] bg-muted">
+    <article className="shop-card flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-border bg-card">
+      <div className="shop-card-media relative aspect-[4/3] overflow-hidden bg-muted">
         {imageUrl ? (
           <Image
             src={imageUrl}
