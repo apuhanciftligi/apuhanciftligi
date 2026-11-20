@@ -36,9 +36,14 @@ import {
   type QnbCredentials,
 } from "@/features/invoicing/infrastructure/qnb-client";
 
-/** The farm as it appears on its invoices. Tax id and office come from env. */
+/**
+ * The farm as it appears on its invoices (title, address and tax office
+ * confirmed by owner 2026-11-20). The tax id comes from env: it differs
+ * between QNB's test environment and live.
+ */
 const SELLER_PROFILE = {
   title: "Hamit Apuhan",
+  taxOffice: "Akçadağ",
   address: {
     street: "Bahri Mah. Mezarlık Cad. No:17",
     district: "Akçadağ",
@@ -69,10 +74,10 @@ interface InvoicingConfig {
 
 function invoicingConfig(): InvoicingConfig | null {
   const {
-    QNB_EARSIV_USERNAME, QNB_EARSIV_PASSWORD, QNB_VKN, QNB_ERP_CODE, QNB_SELLER_TAX_OFFICE,
+    QNB_EARSIV_USERNAME, QNB_EARSIV_PASSWORD, QNB_VKN, QNB_ERP_CODE,
     QNB_TEST_MODE,
   } = env;
-  if (!QNB_EARSIV_USERNAME || !QNB_EARSIV_PASSWORD || !QNB_VKN || !QNB_ERP_CODE || !QNB_SELLER_TAX_OFFICE) {
+  if (!QNB_EARSIV_USERNAME || !QNB_EARSIV_PASSWORD || !QNB_VKN || !QNB_ERP_CODE) {
     return null;
   }
   return {
@@ -83,7 +88,7 @@ function invoicingConfig(): InvoicingConfig | null {
       erpCode: QNB_ERP_CODE,
       testMode: QNB_TEST_MODE === "1",
     },
-    seller: { ...SELLER_PROFILE, taxId: QNB_VKN, taxOffice: QNB_SELLER_TAX_OFFICE },
+    seller: { ...SELLER_PROFILE, taxId: QNB_VKN },
   };
 }
 

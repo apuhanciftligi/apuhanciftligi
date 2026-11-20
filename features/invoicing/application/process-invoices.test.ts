@@ -13,7 +13,6 @@ vi.mock("@/shared/env", () => ({
     QNB_EARSIV_PASSWORD: "p",
     QNB_VKN: "0106106900",
     QNB_ERP_CODE: "QES00001",
-    QNB_SELLER_TAX_OFFICE: "Akçadağ",
     QNB_TEST_MODE: "1",
     LOG_LEVEL: "silent",
   },
