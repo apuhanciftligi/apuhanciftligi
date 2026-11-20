@@ -72,6 +72,7 @@ const orderBundleSchema = z.object({
   status: z.string(),
   payment_status: z.string(),
   payment_method: z.string(),
+  source: z.string(),
   paid_at: z.string().nullable(),
   total_minor: z.coerce.number().int(),
   delivery_fee_minor: z.coerce.number().int(),
@@ -103,7 +104,7 @@ export async function loadInvoiceOrder(orderId: string): Promise<Result<InvoiceO
   const { data, error } = await supabase
     .from("orders")
     .select(
-      "order_number, status, payment_status, payment_method, paid_at, total_minor, delivery_fee_minor, " +
+      "order_number, status, payment_status, payment_method, source, paid_at, total_minor, delivery_fee_minor, " +
         "fulfillment_channel, delivery_address_snapshot, customers(first_name, last_name, email), " +
         "order_items(product_key, quantity, line_total_minor, product_snapshot, products(vat_rate))",
     )
@@ -127,6 +128,7 @@ export async function loadInvoiceOrder(orderId: string): Promise<Result<InvoiceO
     status: o.status,
     paymentStatus: o.payment_status,
     paymentMethod: o.payment_method,
+    source: o.source,
     paidAt: o.paid_at ? new Date(o.paid_at) : null,
     totalMinor: o.total_minor,
     deliveryFeeMinor: o.delivery_fee_minor,

@@ -15,7 +15,7 @@ import { after } from "next/server";
 import { env } from "@/shared/env";
 import { logger } from "@/shared/logger";
 
-import { chooseInvoiceChannel, isTaxId, type InvoiceSeller } from "@/features/invoicing/domain/invoice";
+import { chooseInvoiceChannel, type InvoiceSeller } from "@/features/invoicing/domain/invoice";
 import {
   MAX_INVOICE_ATTEMPTS,
   buildOrderInvoice,
@@ -48,8 +48,9 @@ const SELLER_PROFILE = {
   website: "https://apuhanciftligi.com",
 } as const;
 
-/** Aras Kargo's published head-office address; its VKN comes from env. */
-const ARAS_PROFILE = {
+/** Aras Kargo, carrier of every shipping order (VKN confirmed by owner 2026-11-20). */
+const ARAS_KARGO: CargoCarrier = {
+  taxId: "0720039666",
   title: "Aras Kargo Yurt İçi Yurt Dışı Taşımacılık A.Ş.",
   address: {
     street: "Rüzgarlıbahçe Mah. Yavuz Selim Cad. No:2",
@@ -64,13 +65,12 @@ const BATCH_SIZE = 10;
 interface InvoicingConfig {
   readonly earsiv: QnbCredentials;
   readonly seller: InvoiceSeller;
-  readonly cargoCarrier: CargoCarrier | null;
 }
 
 function invoicingConfig(): InvoicingConfig | null {
   const {
     QNB_EARSIV_USERNAME, QNB_EARSIV_PASSWORD, QNB_VKN, QNB_ERP_CODE, QNB_SELLER_TAX_OFFICE,
-    QNB_TEST_MODE, INVOICE_CARGO_CARRIER_VKN,
+    QNB_TEST_MODE,
   } = env;
   if (!QNB_EARSIV_USERNAME || !QNB_EARSIV_PASSWORD || !QNB_VKN || !QNB_ERP_CODE || !QNB_SELLER_TAX_OFFICE) {
     return null;
@@ -84,10 +84,6 @@ function invoicingConfig(): InvoicingConfig | null {
       testMode: QNB_TEST_MODE === "1",
     },
     seller: { ...SELLER_PROFILE, taxId: QNB_VKN, taxOffice: QNB_SELLER_TAX_OFFICE },
-    cargoCarrier:
-      INVOICE_CARGO_CARRIER_VKN && isTaxId(INVOICE_CARGO_CARRIER_VKN)
-        ? { ...ARAS_PROFILE, taxId: INVOICE_CARGO_CARRIER_VKN }
-        : null,
   };
 }
 
@@ -113,7 +109,7 @@ async function processOne(row: InvoiceRow, config: InvoicingConfig): Promise<Out
     uuid: row.id,
     issuedAt: now,
     seller: config.seller,
-    cargoCarrier: config.cargoCarrier,
+    cargoCarrier: ARAS_KARGO,
   });
   if (!built.ok) {
     // Data problems don't fix themselves: park for a human straight away.

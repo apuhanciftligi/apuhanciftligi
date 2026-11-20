@@ -62,7 +62,7 @@ export function InvoiceTable({ rows }: { rows: readonly InvoiceListRow[] }) {
   if (rows.length === 0) {
     return (
       <p className="rounded-lg border px-4 py-6 text-sm text-muted-foreground">
-        Henüz fatura yok. Kartla ya da havaleyle tamamen ödenen siparişler burada görünür.
+        Henüz fatura yok. Siteden kartla ödenen siparişler burada görünür. Havale ve elden ödemeli siparişlerin faturası elle kesilir.
       </p>
     );
   }

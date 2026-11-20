@@ -3,9 +3,10 @@
  *
  * Pure: the worker loads an `InvoiceOrder` (order + items + customer + each
  * product's KDV rate) and this turns it into the document, or says why it
- * cannot be invoiced automatically. Today every buyer is a consumer
- * (no corporate invoices yet — owner decision 2026-11-20), so every order
- * routes to e-Arşiv through `chooseInvoiceChannel`.
+ * cannot be invoiced automatically. Only web orders paid by card are
+ * invoiced automatically (owner decision 2026-11-20: havale and cash orders
+ * are invoiced by hand). Every buyer is a consumer (no corporate invoices
+ * yet), so every order routes to e-Arşiv through `chooseInvoiceChannel`.
  */
 import type { VatRate } from "@/shared/vat";
 
@@ -35,6 +36,8 @@ export interface InvoiceOrder {
   readonly status: string;
   readonly paymentStatus: string;
   readonly paymentMethod: string;
+  /** orders.source — only 'customer_web' is an internet sale. */
+  readonly source: string;
   readonly paidAt: Date | null;
   readonly totalMinor: number;
   readonly deliveryFeeMinor: number;
@@ -76,17 +79,17 @@ export function buildOrderInvoice(
     readonly uuid: string;
     readonly issuedAt: Date;
     readonly seller: InvoiceSeller;
-    readonly cargoCarrier: CargoCarrier | null;
+    readonly cargoCarrier: CargoCarrier;
   },
 ): OrderInvoiceResult {
   const problems: string[] = [];
   if (order.status === "cancelled") problems.push("Sipariş iptal edilmiş.");
   if (order.paymentStatus !== "paid") problems.push("Sipariş tamamen ödenmiş görünmüyor.");
-  const method: InvoicePaymentMethod | null =
-    order.paymentMethod === "credit_card" ? "card"
-      : order.paymentMethod === "bank_transfer" ? "bank_transfer"
-        : null;
-  if (method === null) problems.push("Bu ödeme yöntemi için otomatik fatura yok.");
+  // The queue trigger only admits card web orders; checked again here so a
+  // row queued under an older rule is never billed automatically.
+  const method: InvoicePaymentMethod | null = order.paymentMethod === "credit_card" ? "card" : null;
+  if (method === null) problems.push("Bu ödeme yöntemi için otomatik fatura yok; elle kesilir.");
+  if (order.source !== "customer_web") problems.push("Site dışı sipariş; fatura elle kesilir.");
   if (order.paidAt && ctx.issuedAt.getTime() - order.paidAt.getTime() > STALE_PAYMENT_MS) {
     // A backlog (e.g. invoicing switched on late) must not be billed in bulk
     // with today's date; someone decides how to invoice those.
@@ -131,17 +134,11 @@ export function buildOrderInvoice(
     problems.push("Fatura satırlarının toplamı sipariş toplamıyla tutmuyor.");
   }
 
-  let carrier: InvoiceDocument["carrier"];
-  if (order.fulfillmentChannel === "shipping") {
-    if (!ctx.cargoCarrier) {
-      problems.push("Kargo firmasının vergi bilgisi tanımlı değil (INVOICE_CARGO_CARRIER_VKN).");
-      return { ok: false, problems };
-    }
-    carrier = ctx.cargoCarrier;
-  } else {
-    // Route deliveries are carried by the farm itself.
-    carrier = { taxId: ctx.seller.taxId, title: ctx.seller.title, address: ctx.seller.address };
-  }
+  // Route deliveries are carried by the farm itself, shipping by the cargo company.
+  const carrier: InvoiceDocument["carrier"] =
+    order.fulfillmentChannel === "shipping"
+      ? ctx.cargoCarrier
+      : { taxId: ctx.seller.taxId, title: ctx.seller.title, address: ctx.seller.address };
 
   if (problems.length > 0 || method === null) return { ok: false, problems };
 

@@ -1,5 +1,5 @@
 /**
- * Faturalar — the QNB invoice queue and record. Card and havale orders land
+ * Faturalar — the QNB invoice queue and record. Card-paid web orders land
  * here automatically once fully paid; issued ones link to the invoice, failed
  * ones show why and can be retried. Paginated (25 per page).
  */
@@ -33,7 +33,7 @@ export default async function FaturalarPage({
       <div>
         <h1 className="text-xl font-semibold">Faturalar</h1>
         <p className="text-sm text-muted-foreground">
-          Kartla ya da havaleyle tamamen ödenen siparişlerin e-Arşiv faturaları QNB üzerinden otomatik kesilir.
+          Siteden kartla (PayTR) ödenen siparişlerin e-Arşiv faturaları QNB üzerinden otomatik kesilir. Havale ve elden ödemeli siparişlerin faturası elle kesilir.
         </p>
       </div>
       <InvoiceTable rows={rows} />
