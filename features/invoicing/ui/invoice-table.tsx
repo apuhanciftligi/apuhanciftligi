@@ -14,7 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/shared/utils/date";
 
-import { retryInvoiceAction, type InvoiceListRow } from "@/features/invoicing/application/invoice-admin";
+import { retryInvoiceAction } from "@/features/invoicing/application/invoice-admin";
+import type { InvoiceListRow } from "@/features/invoicing/application/invoice-types";
 
 const STATUS_LABEL: Record<InvoiceListRow["status"], string> = {
   pending: "Sırada",

@@ -15,9 +15,7 @@ import { logAudit } from "@/shared/audit/log-audit";
 import { ValidationError, type AppError } from "@/shared/errors/app-error";
 import { err, ok, type Result } from "@/shared/result";
 
-import type { InvoiceListRow } from "@/features/invoicing/infrastructure/invoice.repository";
-
-export type { InvoiceListRow };
+import type { InvoiceListRow } from "@/features/invoicing/application/invoice-types";
 
 // Not exported: a "use server" module may export async functions only.
 const INVOICE_PAGE_SIZE = 25;
